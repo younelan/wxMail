@@ -6,15 +6,21 @@
 
 #include "MainFrame.h"
 #include "ChildFrame.h"
+#include "SettingsDialog.h"
 #include <wx/artprov.h>
+#include <wx/aui/auibook.h>
+#include <wx/panel.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
+#include <wx/treectrl.h>
+#include <wx/xrc/xmlres.h>
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // File menu
     EVT_MENU(ID_NEW_MESSAGE, MainFrame::OnNewMessage)
         EVT_MENU(ID_OPEN, MainFrame::OnOpen)
-            EVT_MENU(wxID_EXIT, MainFrame::OnExit)
+            EVT_MENU(XRCID("ID_APP_EXIT"), MainFrame::OnExit)
+                EVT_MENU(wxID_EXIT, MainFrame::OnExit)
 
     // Edit menu
     EVT_MENU(wxID_UNDO, MainFrame::OnUndo)
@@ -33,7 +39,10 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
     // Special menu
     EVT_MENU(ID_SETTINGS, MainFrame::OnSettings)
-        EVT_MENU(ID_EMPTY_TRASH, MainFrame::OnEmptyTrash)
+        EVT_MENU(XRCID("ID_SETTINGS"), MainFrame::OnSettings)
+            EVT_MENU(XRCID("ID_SPECIAL_SETTINGS"), MainFrame::OnSettings)
+                EVT_MENU(wxID_PREFERENCES, MainFrame::OnSettings)
+                    EVT_MENU(ID_EMPTY_TRASH, MainFrame::OnEmptyTrash)
 
     // Window menu
     EVT_MENU(ID_CASCADE, MainFrame::OnCascade)
@@ -43,7 +52,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
     // Help menu
     EVT_MENU(wxID_HELP, MainFrame::OnHelpContents)
-        EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
+        EVT_MENU(wxID_ABOUT, MainFrame::OnAbout) EVT_SIZE(MainFrame::OnSize)
 
     // Update UI
     EVT_UPDATE_UI(wxID_CUT, MainFrame::OnUpdateNeedSelection)
@@ -52,80 +61,103 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
                 wxEND_EVENT_TABLE()
 
                     MainFrame::MainFrame(const wxString &title)
-    : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(1200, 800)),
-      m_splitter(nullptr), m_mailboxTree(nullptr), m_notebook(nullptr),
+    : m_splitter(nullptr), m_mailboxTree(nullptr), m_notebook(nullptr),
       m_statusBar(nullptr) {
-  // Create menu bar
-  CreateMenuBar();
+  // Load the frame from XRC
+  wxXmlResource::Get()->LoadFrame(this, nullptr, "MainFrame");
+  SetMenuBar(wxXmlResource::Get()->LoadMenuBar("IDR_MAINFRAME"));
+  SetTitle(title);
 
-  // Create toolbar
-  wxToolBar *toolbar = CreateToolBar(wxTB_HORIZONTAL | wxTB_FLAT | wxTB_TEXT);
-  toolbar->AddTool(ID_NEW_MESSAGE, "New",
-                   wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR),
-                   "New Message");
-  toolbar->AddTool(ID_REPLY, "Reply",
-                   wxArtProvider::GetBitmap(wxART_UNDO, wxART_TOOLBAR),
-                   "Reply");
-  toolbar->AddTool(ID_FORWARD, "Forward",
-                   wxArtProvider::GetBitmap(wxART_REDO, wxART_TOOLBAR),
-                   "Forward");
-  toolbar->AddSeparator();
-  toolbar->AddTool(ID_DELETE_MESSAGE, "Delete",
-                   wxArtProvider::GetBitmap(wxART_DELETE, wxART_TOOLBAR),
-                   "Delete");
-  toolbar->AddSeparator();
-  toolbar->AddTool(wxID_PRINT, "Print",
-                   wxArtProvider::GetBitmap(wxART_PRINT, wxART_TOOLBAR),
-                   "Print");
-  toolbar->Realize();
+  // Get pointers to controls
+  m_splitter = XRCCTRL(*this, "main_splitter", wxSplitterWindow);
+  wxTreeCtrl *treeCtrl = XRCCTRL(*this, "mailbox_tree", wxTreeCtrl);
+  wxPanel *notebookPanel = XRCCTRL(*this, "content_panel", wxPanel);
 
   // Create status bar
-  m_statusBar = CreateStatusBar(3);
-  int widths[] = {-1, 150, 100};
-  m_statusBar->SetStatusWidths(3, widths);
-  SetStatusText("Ready", 0);
-  SetStatusText("No messages", 1);
-  SetStatusText("Offline", 2);
+  m_statusBar = GetStatusBar();
+  if (m_statusBar) {
+    m_statusBar->SetFieldsCount(3);
+    int widths[] = {-1, 150, 100};
+    m_statusBar->SetStatusWidths(3, widths);
+    SetStatusText("Ready", 0);
+    SetStatusText("No messages", 1);
+    SetStatusText("Offline", 2);
+  }
 
-  // Create splitter window - THIS is the main content area
-  m_splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
-                                    wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
+  // Bind settings and exit events explicitly using XRC IDs
+  Bind(wxEVT_MENU, &MainFrame::OnSettings, this, XRCID("ID_SETTINGS"));
+  Bind(wxEVT_MENU, &MainFrame::OnExit, this, XRCID("ID_APP_EXIT"));
+  Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
+  // If we have a notebook panel from XRC, put the notebook in it
+  if (notebookPanel) {
+    m_notebook = new wxAuiNotebook(
+        notebookPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+        wxAUI_NB_TOP | wxAUI_NB_TAB_SPLIT | wxAUI_NB_TAB_MOVE |
+            wxAUI_NB_CLOSE_ON_ACTIVE_TAB);
 
-  // Create mailbox tree on the LEFT
-  m_mailboxTree = new MailboxTree(m_splitter, wxID_ANY);
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(m_notebook, 1, wxEXPAND);
+    notebookPanel->SetSizer(sizer);
 
-  // Create notebook on the RIGHT for document tabs
-  m_notebook =
-      new wxAuiNotebook(m_splitter, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                        wxAUI_NB_TOP | wxAUI_NB_TAB_SPLIT | wxAUI_NB_TAB_MOVE |
-                            wxAUI_NB_CLOSE_ON_ACTIVE_TAB);
+    // Add a welcome page to the notebook
+    wxPanel *welcomePanel = new wxPanel(m_notebook, wxID_ANY);
+    welcomePanel->SetBackgroundColour(*wxWHITE);
+    wxBoxSizer *welcomeSizer = new wxBoxSizer(wxVERTICAL);
+    wxStaticText *welcomeText =
+        new wxStaticText(welcomePanel, wxID_ANY,
+                         "Welcome to wxEudora (Phoenix UI)\n\n"
+                         "• Use File → New Message to compose\n"
+                         "• Click a mailbox to view messages\n"
+                         "• Double-click a message to open it\n",
+                         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    wxFont font = welcomeText->GetFont();
+    font.SetPointSize(12);
+    welcomeText->SetFont(font);
+    welcomeSizer->AddStretchSpacer();
+    welcomeSizer->Add(welcomeText, 0, wxALL | wxALIGN_CENTER, 20);
+    welcomeSizer->AddStretchSpacer();
+    welcomePanel->SetSizer(welcomeSizer);
+    m_notebook->AddPage(welcomePanel, "Welcome", true);
+  }
 
-  // Add a welcome page to the notebook
-  wxPanel *welcomePanel = new wxPanel(m_notebook, wxID_ANY);
-  welcomePanel->SetBackgroundColour(*wxWHITE);
-  wxBoxSizer *welcomeSizer = new wxBoxSizer(wxVERTICAL);
-  wxStaticText *welcomeText =
-      new wxStaticText(welcomePanel, wxID_ANY,
-                       "Welcome to wxEudora\n\n"
-                       "• Use File → New Message to compose\n"
-                       "• Click a mailbox to view messages\n"
-                       "• Double-click a message to open it\n",
-                       wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
-  wxFont font = welcomeText->GetFont();
-  font.SetPointSize(12);
-  welcomeText->SetFont(font);
-  welcomeSizer->AddStretchSpacer();
-  welcomeSizer->Add(welcomeText, 0, wxALL | wxALIGN_CENTER, 20);
-  welcomeSizer->AddStretchSpacer();
-  welcomePanel->SetSizer(welcomeSizer);
-  m_notebook->AddPage(welcomePanel, "Welcome", true);
+  // Initialize mailbox tree
+  if (m_splitter && treeCtrl && notebookPanel) {
+    // Replace the generic wxTreeCtrl with our custom MailboxTree
+    wxWindow *parent = treeCtrl->GetParent();
+    m_mailboxTree = new MailboxTree(parent, wxID_ANY);
+    m_splitter->ReplaceWindow(treeCtrl, m_mailboxTree);
+    treeCtrl->Destroy();
 
-  // Split vertically: tree on left (250px), notebook on right
-  m_splitter->SplitVertically(m_mailboxTree, m_notebook, 250);
-  m_splitter->SetMinimumPaneSize(150);
+    // Ensure splitter fills the entire client area
+    m_splitter->SetSplitMode(wxSPLIT_VERTICAL);
+    m_splitter->SetSashPosition(250);
+    m_splitter->SetSize(GetClientSize());
+  }
 
-  // Center the window
+  // Set the frame size to ensure children have a size to calculate from
+  SetSize(1200, 800);
+
+  // Center and layout
+  Layout();
   Centre();
+
+  // Robust post-creation layout refresh
+  CallAfter([this]() {
+    if (m_splitter) {
+      m_splitter->SetSize(GetClientSize());
+      m_splitter->SetSashPosition(250);
+      m_splitter->UpdateSize();
+      Layout();
+    }
+  });
+}
+
+void MainFrame::OnSize(wxSizeEvent &event) {
+  event.Skip();
+  if (m_splitter) {
+    m_splitter->SetSize(GetClientSize());
+    m_splitter->UpdateSize();
+  }
 }
 
 MainFrame::~MainFrame() {}
@@ -184,9 +216,6 @@ void MainFrame::CreateMenuBar() {
                       "Reply to all recipients");
   messageMenu->Append(ID_FORWARD, "&Forward\tCtrl-J", "Forward message");
   messageMenu->Append(ID_REDIRECT, "Re&direct", "Redirect message");
-  messageMenu->AppendSeparator();
-  messageMenu->Append(ID_DELETE_MESSAGE, "&Delete\tCtrl-D",
-                      "Delete selected messages");
   messageMenu->AppendSeparator();
   messageMenu->Append(wxID_ANY, "&Send Immediately", "Send message now");
   menuBar->Append(messageMenu, "&Message");
@@ -344,8 +373,8 @@ void MainFrame::OnDelete(wxCommandEvent &WXUNUSED(event)) {
 
 // Special menu handlers
 void MainFrame::OnSettings(wxCommandEvent &WXUNUSED(event)) {
-  wxMessageBox("Settings dialog would appear here.", "Settings",
-               wxOK | wxICON_INFORMATION, this);
+  SettingsDialog dialog(this);
+  dialog.ShowModal();
 }
 
 void MainFrame::OnEmptyTrash(wxCommandEvent &WXUNUSED(event)) {

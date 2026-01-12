@@ -57,6 +57,7 @@ private:
   // Event handlers - Help menu
   void OnHelpContents(wxCommandEvent &event);
   void OnAbout(wxCommandEvent &event);
+  void OnSize(wxSizeEvent &event);
 
   // Update UI handlers
   void OnUpdateNeedSelection(wxUpdateUIEvent &event);
