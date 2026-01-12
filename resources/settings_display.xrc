@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="DisplayPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showToolbar">
+          <label>Show toolbar</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showTooltips">
+          <label>Show toolbar tips</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showCoolbar">
+          <label>Show cool bars</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showLargeButtons">
+          <label>Show large buttons</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showStatusBar">
+          <label>Show status bar</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showCategoryIcons">
+          <label>Show category icons</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_mdiTaskbar">
+          <label>Show MDI task bar</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_autoDownloadGraphics">
+          <label>Automatically download HTML graphics</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_displayImagesInline">
+          <label>Display attached images inline</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_displayEmoticons">
+          <label>Display emoticons as pictures</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_minimizeToTray">
+          <label>Minimize Eudora to the system tray</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_alwaysShowTrayIcon">
+          <label>Always show icon in system tray</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

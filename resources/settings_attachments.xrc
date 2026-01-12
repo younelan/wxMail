@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="AttachmentsPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <!-- Encoding method -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>Encoding method:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_encodeMime">
+          <label>MIME</label>
+          <style>wxRB_GROUP</style>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_encodeBinhex">
+          <label>BinHex</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_encodeUuencode">
+          <label>Uuencode</label>
+        </object>
+      </object>
+      <!-- Attachment directory -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>Attachment directory:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxButton" name="m_attachmentDir">
+          <label>(Click to select)</label>
+        </object>
+      </object>
+      <!-- Checkboxes -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_putTextInBody">
+          <label>Put text attachments in body of message</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_digestAsMailbox">
+          <label>Receive MIME digest as a mailbox attachment</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_deleteOnTrash">
+          <label>Delete attachments when emptying Trash</label>
+        </object>
+      </object>
+      <!-- Delete automatic attachments -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>10</border>
+        <object class="wxStaticText">
+          <label>Delete automatic attachments:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_autoDeleteNever">
+          <label>Never</label>
+          <style>wxRB_GROUP</style>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_autoDeleteSend">
+          <label>After sending message</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_autoDeleteTrash">
+          <label>When message emptied from Trash</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

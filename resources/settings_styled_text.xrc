@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="StyledTextPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showFormattingToolbar">
+          <label>Show formatting toolbar</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>10</border>
+        <object class="wxStaticText">
+          <label>When sending mail with styled text (HTML):</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_sendBothPlainStyled">
+          <label>Send both plain and styled</label>
+          <style>wxRB_GROUP</style>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_sendStyledOnly">
+          <label>Send styled text only</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_sendPlainOnly">
+          <label>Send plain text only</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_askEachTime">
+          <label>Ask me each time</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>10</border>
+        <object class="wxStaticText">
+          <label>When the body of a message has no styles, but the signature does have styles:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_sendStyledSig">
+          <label>Send the signature with styles</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

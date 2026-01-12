@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="GettingStartedPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <!-- Real name -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>Real name:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxTextCtrl" name="m_realName"/>
+      </object>
+      <!-- Email address -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>Email address:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxTextCtrl" name="m_emailAddress"/>
+      </object>
+      <!-- Mail Server (Incoming) -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>Mail Server (Incoming):</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxTextCtrl" name="m_popServer"/>
+      </object>
+      <!-- User Name -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>User Name:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxTextCtrl" name="m_loginName"/>
+      </object>
+      <!-- SMTP Server (Outgoing) -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>SMTP Server (Outgoing):</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxTextCtrl" name="m_smtpServer"/>
+      </object>
+      <!-- Allow authentication checkbox -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_allowAuth">
+          <label>Allow authentication</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

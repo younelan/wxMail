@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="ReplyingPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_replyToAll">
+          <label>Map Ctrl+R to "Reply to All"</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_copyPriority">
+          <label>Copy original's priority to reply</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_autoFcc">
+          <label>Automatically Fcc to original mailbox</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_includeSig">
+          <label>Include signature on reply</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_quoteSelection">
+          <label>Quote only the selected text on Reply or Forward</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_multipleReplies">
+          <label>Generate multiple messages on Reply to multiple messages</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>10</border>
+        <object class="wxStaticText">
+          <label>When replying to all:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_includeSelf">
+          <label>Include yourself</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_putToInCc">
+          <label>Put original To: recipients in Cc: field</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="MailboxesPanel">
+    <size>250,180</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <!-- Show Mailbox Columns GroupBox -->
+      <object class="sizeritem">
+        <flag>wxALL|wxEXPAND</flag>
+        <border>5</border>
+        <object class="wxStaticBoxSizer">
+          <label>Show Mailbox Columns</label>
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <flag>wxALL</flag>
+            <border>2</border>
+            <object class="wxBoxSizer">
+              <orient>wxHORIZONTAL</orient>
+              <object class="sizeritem">
+                <object class="wxBoxSizer">
+                  <orient>wxVERTICAL</orient>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showStatus">
+                      <label>Status</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showJunk">
+                      <label>Junk</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showPriority">
+                      <label>Priority</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showAttachment">
+                      <label>Attachment</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showLabel">
+                      <label>Label</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showWho">
+                      <label>Who</label>
+                    </object>
+                  </object>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxBoxSizer">
+                  <orient>wxVERTICAL</orient>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showDate">
+                      <label>Date</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showSize">
+                      <label>Size</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showServerStatus">
+                      <label>Server status</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showMood">
+                      <label>Mood Watch</label>
+                    </object>
+                  </object>
+                  <object class="sizeritem">
+                    <object class="wxCheckBox" name="m_showSubject">
+                      <label>Subject</label>
+                    </object>
+                  </object>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showMailboxLines">
+          <label>Show mailbox lines</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_showSelCount">
+          <label>Show count of selected messages in size box</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_closeWithMailbox">
+          <label>Close messages with mailbox</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_fumlub">
+          <label>Select newly inserted messages (FUMLUB)</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL</flag>
+            <object class="wxStaticText">
+              <label>Show no more than</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <flag>wxLEFT|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxTextCtrl" name="m_maxRecentMailbox">
+              <size>30,-1</size>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL</flag>
+            <object class="wxStaticText">
+              <label>items in the Recent mailbox menus</label>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxStaticText">
+          <label>When dragging in a mailbox:</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_allowDragDrop">
+          <label>Allow drag and drop transfers</label>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxCheckBox" name="m_dragSelectMessages">
+          <label>Allow drag-select of messages</label>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>

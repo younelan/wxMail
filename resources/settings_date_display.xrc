@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxPanel" name="DateDisplayPanel">
+    <size>250,166</size>
+    <bg>#F0F0F0</bg>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <!-- Timezone options -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_localTimezone">
+          <label>Local timezone</label>
+          <style>wxRB_GROUP</style>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_senderTimezone">
+          <label>Sender's timezone</label>
+        </object>
+      </object>
+      <!-- Date format options -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>10</border>
+        <object class="wxRadioButton" name="m_fixedFormat">
+          <label>Fixed:</label>
+          <style>wxRB_GROUP</style>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxRadioButton" name="m_ageSensitive">
+          <label>Age-sensitive:</label>
+        </object>
+      </object>
+      <!-- Format fields -->
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>Fixed format:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_fixedDateFormat">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>RECENT format:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_recentDateFormat">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>Hours to be OLD:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_oldDateHours">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>OLD format:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_oldDateFormat">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>Hours to be ANCIENT:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_ancientDateHours">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <flag>wxALL</flag>
+        <border>5</border>
+        <object class="wxBoxSizer">
+          <orient>wxHORIZONTAL</orient>
+          <object class="sizeritem">
+            <flag>wxALIGN_CENTER_VERTICAL|wxRIGHT</flag>
+            <border>5</border>
+            <object class="wxStaticText">
+              <label>ANCIENT format:</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxTextCtrl" name="m_ancientDateFormat">
+              <size>60,-1</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="spacer">
+        <option>1</option>
+      </object>
+    </object>
+  </object>
+</resource>
