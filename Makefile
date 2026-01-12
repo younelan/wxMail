@@ -9,7 +9,7 @@ LDFLAGS =
 # wxWidgets configuration
 WX_CONFIG = wx-config
 WX_CXXFLAGS = $(shell $(WX_CONFIG) --cxxflags)
-WX_LIBS = $(shell $(WX_CONFIG) --libs aui,core,base)
+WX_LIBS = $(shell $(WX_CONFIG) --libs aui,core,base,xrc)
 
 # Directories
 SRC_DIR = src
@@ -21,7 +21,7 @@ BIN_DIR = bin
 TARGET = $(BIN_DIR)/wxeudora
 
 # Source files
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/panels/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 # Default target
@@ -41,6 +41,7 @@ $(TARGET): $(OBJECTS) | $(BIN_DIR)
 
 # Compile source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(WX_CXXFLAGS) -c $< -o $@
 
 # Run the application
