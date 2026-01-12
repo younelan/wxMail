@@ -9,11 +9,14 @@
 #include "SettingsDialog.h"
 #include <wx/artprov.h>
 #include <wx/aui/auibook.h>
+#include <wx/aui/aui.h>
+#include <wx/aui/auibar.h>
 #include <wx/panel.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/treectrl.h>
 #include <wx/xrc/xmlres.h>
+#include <wx/fileconf.h>
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // File menu
@@ -133,6 +136,67 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     m_splitter->SetSashPosition(250);
     m_splitter->SetSize(GetClientSize());
   }
+  // Setup AUI manager now so panes reserve space for toolbars
+  m_auiManager = new wxAuiManager(this);
+
+  // Make the main splitter the center pane so toolbars dock around it
+  if (m_splitter) {
+    m_auiManager->AddPane(m_splitter, wxAuiPaneInfo().CenterPane());
+  }
+
+  // Create main toolbar and try to load icons from resources/png
+  m_toolBar = new wxAuiToolBar(this, wxID_ANY,
+                               wxDefaultPosition, wxDefaultSize,
+                               wxAUI_TB_HORZ_TEXT);
+  // helper lambda to load a PNG and add tool (fallback to text)
+  auto addToolWithPng = [this](int id, const wxString &label, const wxString &png, const wxString &tip) {
+    wxBitmap bmp;
+    if (wxFileExists(png)) bmp.LoadFile(png, wxBITMAP_TYPE_PNG);
+    if (bmp.IsOk()) m_toolBar->AddTool(id, label, bmp, tip);
+    else m_toolBar->AddTool(id, label, wxNullBitmap, tip);
+  };
+
+  addToolWithPng(ID_NEW_MESSAGE, "New", "resources/png/NEWFILE.png", "New Message");
+  addToolWithPng(ID_REPLY, "Reply", "resources/png/REPLYING.png", "Reply");
+
+  // If RTB1 is a sprite (many 16x16 icons in a row), extract sub-bitmaps
+  auto addToolsFromSprite = [this](const wxString &png, int baseId, int tileW, int tileH, int maxCount) {
+    if (!wxFileExists(png)) return 0;
+    wxBitmap bmp;
+    if (!bmp.LoadFile(png, wxBITMAP_TYPE_PNG) || !bmp.IsOk()) return 0;
+    int cols = bmp.GetWidth() / tileW;
+    if (cols <= 0) return 0;
+    int yoff = 0;
+    if (bmp.GetHeight() > tileH) yoff = (bmp.GetHeight() - tileH) / 2;
+    int added = 0;
+    for (int c = 0; c < cols && added < maxCount; ++c) {
+      wxRect r(c * tileW, yoff, tileW, tileH);
+      wxBitmap sub = bmp.GetSubBitmap(r);
+      int id = baseId + added;
+      m_toolBar->AddTool(id, wxEmptyString, sub);
+      // bind this generated tool to a generic secondary handler
+      Bind(wxEVT_TOOL, &MainFrame::OnSecondaryTool, this, id);
+      ++added;
+    }
+    return added;
+  };
+
+  // Add sprite icons (17x17) from RTB1.png after Reply. Cap to 32 icons.
+  int spriteAdded = addToolsFromSprite("resources/png/RTB1.png", ID_SEC_TOOL_BASE, 17, 17, 32);
+  (void)spriteAdded; // silence unused in some builds
+
+  addToolWithPng(ID_FORWARD, "Forward", "", "Forward");
+  addToolWithPng(ID_DELETE_MESSAGE, "Delete", "resources/png/Remove.png", "Delete");
+
+  m_toolBar->Realize();
+  m_auiManager->AddPane(m_toolBar, wxAuiPaneInfo().Name("MainToolbar").ToolbarPane().Top());
+  m_auiManager->Update();
+
+  // Bind toolbar events to existing handlers
+  Bind(wxEVT_TOOL, &MainFrame::OnNewMessage, this, ID_NEW_MESSAGE);
+  Bind(wxEVT_TOOL, &MainFrame::OnReply, this, ID_REPLY);
+  Bind(wxEVT_TOOL, &MainFrame::OnForward, this, ID_FORWARD);
+  Bind(wxEVT_TOOL, &MainFrame::OnDelete, this, ID_DELETE_MESSAGE);
 
   // Set the frame size to ensure children have a size to calculate from
   SetSize(1200, 800);
@@ -160,7 +224,18 @@ void MainFrame::OnSize(wxSizeEvent &event) {
   }
 }
 
-MainFrame::~MainFrame() {}
+MainFrame::~MainFrame() {
+  if (m_auiManager) {
+    // Save perspective
+    wxFileConfig config(wxEmptyString, wxEmptyString);
+    wxString perspective = m_auiManager->SavePerspective();
+    config.Write("ToolBar/Perspective", perspective);
+    m_auiManager->UnInit();
+    delete m_auiManager;
+    m_auiManager = nullptr;
+  }
+}
+
 
 void MainFrame::CreateMenuBar() {
   wxMenuBar *menuBar = new wxMenuBar;
@@ -369,6 +444,12 @@ void MainFrame::OnForward(wxCommandEvent &WXUNUSED(event)) {
 
 void MainFrame::OnDelete(wxCommandEvent &WXUNUSED(event)) {
   SetStatusText("Delete - Not yet implemented", 0);
+}
+
+void MainFrame::OnSecondaryTool(wxCommandEvent &event) {
+  int idx = event.GetId() - ID_SEC_TOOL_BASE;
+  wxString msg = wxString::Format("Secondary toolbar tool %d clicked", idx);
+  SetStatusText(msg, 0);
 }
 
 // Special menu handlers

@@ -7,6 +7,7 @@
 #include "MainApp.h"
 #include "MainFrame.h"
 #include <wx/xrc/xmlres.h>
+#include <wx/image.h>
 
 wxIMPLEMENT_APP(MainApp);
 
@@ -16,6 +17,9 @@ bool MainApp::OnInit() {
 
   if (!wxApp::OnInit())
     return false;
+
+  // Register image handlers (PNG, JPEG, etc.) so wxBitmap(wxImage) works
+  wxInitAllImageHandlers();
 
   // Initialize XRC resource system
   wxXmlResource::Get()->InitAllHandlers();

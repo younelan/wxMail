@@ -12,6 +12,9 @@
 #include <wx/splitter.h>
 #include <wx/wx.h>
 
+class wxAuiManager;
+class wxAuiToolBar;
+
 /**
  * Main application frame with notebook-based document interface
  */
@@ -44,6 +47,9 @@ private:
   void OnForward(wxCommandEvent &event);
   void OnDelete(wxCommandEvent &event);
 
+  // Handler for secondary toolbar tools extracted from sprite
+  void OnSecondaryTool(wxCommandEvent &event);
+
   // Event handlers - Special menu
   void OnSettings(wxCommandEvent &event);
   void OnEmptyTrash(wxCommandEvent &event);
@@ -68,6 +74,9 @@ private:
   MailboxTree *m_mailboxTree;
   wxAuiNotebook *m_notebook;
   wxStatusBar *m_statusBar;
+  // AUI manager and main toolbar
+  wxAuiManager *m_auiManager = nullptr;
+  wxAuiToolBar *m_toolBar = nullptr;
 
   wxDECLARE_EVENT_TABLE();
 };
@@ -111,6 +120,9 @@ enum {
   ID_TILE_HORIZONTAL,
   ID_TILE_VERTICAL,
   ID_CLOSE_ALL
+  ,
+  // Base for toolbar sprite-generated tool IDs
+  ID_SEC_TOOL_BASE = wxID_HIGHEST + 1000
 };
 
 #endif // MAINFRAME_H
