@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxFrame" name="NewMessageFrame">
+    <title>New Message</title>
+    <style>wxDEFAULT_FRAME_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX</style>
+    <size>800,600</size>
+    <object class="wxBoxSizer">
+      <orient>wxVERTICAL</orient>
+      <object class="sizeritem">
+        <flag>wxEXPAND</flag>
+        <object class="wxToolBar" name="NewMsgToolBar">
+          <tool name="ID_NM_SEND">
+            <label>Send</label>
+            <bitmap>NEWFILE.png</bitmap>
+          </tool>
+          <tool name="ID_NM_ATTACH">
+            <label>Attach</label>
+            <bitmap>CompMsgSettings.png</bitmap>
+          </tool>
+          <tool name="ID_NM_BOLD">
+            <label>Bold</label>
+            <bitmap>Bold.png</bitmap>
+          </tool>
+          <tool name="ID_NM_ITALIC">
+            <label>Italic</label>
+            <bitmap>Italic.png</bitmap>
+          </tool>
+          <tool name="ID_NM_UNDER">
+            <label>Underline</label>
+            <bitmap>Underline.png</bitmap>
+          </tool>
+        </object>
+      </object>
+      <object class="sizeritem">
+        <proportion>0</proportion>
+        <flag>wxEXPAND|wxALL</flag>
+        <border>4</border>
+        <object class="wxBoxSizer">
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <flag>wxEXPAND</flag>
+            <object class="wxStaticText">
+              <label>From:</label>
+            </object>
+            <object class="wxTextCtrl" name="from" />
+          </object>
+          <object class="sizeritem">
+            <flag>wxEXPAND</flag>
+            <object class="wxStaticText">
+              <label>To:</label>
+            </object>
+            <object class="wxTextCtrl" name="to" />
+          </object>
+          <object class="sizeritem">
+            <flag>wxEXPAND</flag>
+            <object class="wxStaticText">
+              <label>Subject:</label>
+            </object>
+            <object class="wxTextCtrl" name="subject" />
+          </object>
+        </object>
+      </object>
+
+      <object class="sizeritem">
+        <proportion>1</proportion>
+        <flag>wxEXPAND|wxALL</flag>
+        <border>4</border>
+        <!-- use a simple panel placeholder; the real wxRichTextCtrl is created in code -->
+        <object class="wxPanel" name="body_placeholder" />
+      </object>
+    </object>
+  </object>
+</resource>

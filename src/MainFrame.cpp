@@ -7,6 +7,7 @@
 #include "MainFrame.h"
 #include "ChildFrame.h"
 #include "SettingsDialog.h"
+#include "NewMessageDialog.h"
 #include <wx/artprov.h>
 #include <wx/aui/auibook.h>
 #include <wx/aui/aui.h>
@@ -17,6 +18,13 @@
 #include <wx/treectrl.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/fileconf.h>
+// new-message helpers removed; using original notebook compose behavior
+#include <wx/richtext/richtextctrl.h>
+
+// Note: Do not call into heavy legacy compose/document code from here to
+// avoid bringing in large headers and link dependencies. Send/Queue are
+// implemented as UI-level stubs that can later be wired to the canonical
+// document system.
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // File menu
@@ -181,9 +189,58 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     return added;
   };
 
-  // Add sprite icons (17x17) from RTB1.png after Reply. Cap to 32 icons.
-  int spriteAdded = addToolsFromSprite("resources/png/RTB1.png", ID_SEC_TOOL_BASE, 17, 17, 32);
-  (void)spriteAdded; // silence unused in some builds
+  // Map RTB1 sprite tiles to toolbar IDs from the original RC.
+  // Order matches the original resource snippet (buttons, separators, etc.).
+  std::vector<wxString> rtb1_map = {
+      "ID_BLAHBLAHBLAH",            "ID_EDIT_MESSAGE",
+      "ID_DELETE_FROM_SERVER",      "ID_DOWNLOAD_FROM_SERVER",
+      "ID_EDIT_TEXT_BOLD",          "ID_EDIT_TEXT_ITALIC",
+      "ID_EDIT_TEXT_UNDERLINE",     "ID_EDIT_TEXT_STRIKEOUT",
+      "ID_EDIT_TEXT_LAST_TEXT_COLOR","ID_EDIT_TEXT_COLOR",
+      "ID_EDIT_TEXT_LEFT",          "ID_EDIT_TEXT_CENTER",
+      "ID_EDIT_TEXT_RIGHT",         "SEPARATOR",
+      "ID_EDIT_TEXT_INDENT_IN",     "ID_EDIT_TEXT_INDENT_OUT",
+      "ID_EDIT_TEXT_CLEAR",         "ID_EDIT_TEXT_SIZE",
+      "ID_PRIORITY",                "ID_SUBJECT",
+      "ID_SUBJECT_STATIC",          "ID_TOW_TRUCK",
+      "ID_EDIT_TEXT_TT",            "SEPARATOR",
+      "ID_FONT",                    "ID_EDIT_INSERT_PICTURE",
+      "ID_EDIT_INSERT_LINK",        "ID_EDIT_INSERT_HR",
+      "ID_USE_FIXED_FONT",          "ID_BLKFMT_BULLETTED_LIST",
+      "ID_EDIT_INSERT",             "ID_EDIT_TEXT_FORMAT_PAINTER"};
+
+  // Load sprite and apply mapping: each non-separator consumes one tile.
+  if (wxFileExists("resources/png/RTB1.png")) {
+    wxBitmap bmp;
+    if (bmp.LoadFile("resources/png/RTB1.png", wxBITMAP_TYPE_PNG) && bmp.IsOk()) {
+      int tileW = 17, tileH = 17;
+      int cols = bmp.GetWidth() / tileW;
+      int yoff = (bmp.GetHeight() > tileH) ? (bmp.GetHeight() - tileH) / 2 : 0;
+      int tileIndex = 0;
+      for (size_t i = 0; i < rtb1_map.size(); ++i) {
+        const wxString &token = rtb1_map[i];
+        if (token == "SEPARATOR") {
+          m_toolBar->AddSeparator();
+          continue;
+        }
+        if (tileIndex >= cols) break;
+        wxRect r(tileIndex * tileW, yoff, tileW, tileH);
+        wxBitmap sub = bmp.GetSubBitmap(r);
+        int id = XRCID(token);
+        // If XRCID returned a valid id (non-zero), add the tool with that id,
+        // otherwise add as a generated secondary id.
+        if (id != 0) {
+          m_toolBar->AddTool(id, wxEmptyString, sub);
+          Bind(wxEVT_TOOL, &MainFrame::OnSecondaryTool, this, id);
+        } else {
+          int gid = ID_SEC_TOOL_BASE + tileIndex;
+          m_toolBar->AddTool(gid, wxEmptyString, sub);
+          Bind(wxEVT_TOOL, &MainFrame::OnSecondaryTool, this, gid);
+        }
+        ++tileIndex;
+      }
+    }
+  }
 
   addToolWithPng(ID_FORWARD, "Forward", "", "Forward");
   addToolWithPng(ID_DELETE_MESSAGE, "Delete", "resources/png/Remove.png", "Delete");
@@ -197,6 +254,10 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
   Bind(wxEVT_TOOL, &MainFrame::OnReply, this, ID_REPLY);
   Bind(wxEVT_TOOL, &MainFrame::OnForward, this, ID_FORWARD);
   Bind(wxEVT_TOOL, &MainFrame::OnDelete, this, ID_DELETE_MESSAGE);
+  // Bind top-toolbar formatting buttons (if present in XRC)
+  Bind(wxEVT_TOOL, &MainFrame::OnFormatBold, this, XRCID("ID_EDIT_TEXT_BOLD"));
+  Bind(wxEVT_TOOL, &MainFrame::OnFormatItalic, this, XRCID("ID_EDIT_TEXT_ITALIC"));
+  Bind(wxEVT_TOOL, &MainFrame::OnFormatUnderline, this, XRCID("ID_EDIT_TEXT_UNDERLINE"));
 
   // Set the frame size to ensure children have a size to calculate from
   SetSize(1200, 800);
@@ -222,6 +283,61 @@ void MainFrame::OnSize(wxSizeEvent &event) {
     m_splitter->SetSize(GetClientSize());
     m_splitter->UpdateSize();
   }
+}
+
+// Find the first wxRichTextCtrl in the currently active notebook page (compose)
+wxRichTextCtrl *MainFrame::FindActiveComposeRichText() {
+  if (!m_notebook) return nullptr;
+  int sel = m_notebook->GetSelection();
+  if (sel == wxNOT_FOUND) return nullptr;
+  wxWindow *page = m_notebook->GetPage(sel);
+  if (!page) return nullptr;
+  for (wxWindowList::iterator it = page->GetChildren().begin(); it != page->GetChildren().end(); ++it) {
+    wxWindow *child = *it;
+    wxRichTextCtrl *rt = dynamic_cast<wxRichTextCtrl *>(child);
+    if (rt) return rt;
+    // also check descendants
+    wxRichTextCtrl *rt2 = dynamic_cast<wxRichTextCtrl *>(child->FindWindowById(child->GetId()));
+    (void)rt2; // silence unused
+  }
+  // fallback: search grandchildren
+  for (wxWindowList::iterator it = page->GetChildren().begin(); it != page->GetChildren().end(); ++it) {
+    wxWindow *child = *it;
+    wxWindowList &grand = child->GetChildren();
+    for (wxWindowList::iterator jt = grand.begin(); jt != grand.end(); ++jt) {
+      wxRichTextCtrl *rt = dynamic_cast<wxRichTextCtrl *>(*jt);
+      if (rt) return rt;
+    }
+  }
+  return nullptr;
+}
+
+// Apply a simple rich-text attribute to the active compose control
+void MainFrame::ApplyRichTextStyle(wxRichTextCtrl *rc, int which) {
+  if (!rc) return;
+  long from = 0, to = 0;
+  rc->GetSelection(&from, &to);
+  if (from == to) return; // nothing selected
+  wxRichTextAttr attr;
+  if (which == 1) attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+  else if (which == 2) attr.SetFontStyle(wxFONTSTYLE_ITALIC);
+  else if (which == 3) attr.SetFontUnderlined(true);
+  rc->SetStyle(from, to, attr);
+}
+
+void MainFrame::OnFormatBold(wxCommandEvent &WXUNUSED(event)) {
+  wxRichTextCtrl *rc = FindActiveComposeRichText();
+  ApplyRichTextStyle(rc, 1);
+}
+
+void MainFrame::OnFormatItalic(wxCommandEvent &WXUNUSED(event)) {
+  wxRichTextCtrl *rc = FindActiveComposeRichText();
+  ApplyRichTextStyle(rc, 2);
+}
+
+void MainFrame::OnFormatUnderline(wxCommandEvent &WXUNUSED(event)) {
+  wxRichTextCtrl *rc = FindActiveComposeRichText();
+  ApplyRichTextStyle(rc, 3);
 }
 
 MainFrame::~MainFrame() {
@@ -354,12 +470,110 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
   wxPanel *composePanel = new wxPanel(m_notebook, wxID_ANY);
   composePanel->SetBackgroundColour(*wxWHITE);
 
-  wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-  wxTextCtrl *textCtrl =
-      new wxTextCtrl(composePanel, wxID_ANY, "Compose your message here...",
-                     wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-  sizer->Add(textCtrl, 1, wxEXPAND | wxALL, 5);
-  composePanel->SetSizer(sizer);
+  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+
+  // Header fields: From, To, Cc, Bcc, Subject
+  wxFlexGridSizer *hdrGrid = new wxFlexGridSizer(2, 5, 5);
+  hdrGrid->AddGrowableCol(1, 1);
+
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "From:"), 0, wxALIGN_CENTER_VERTICAL);
+  // Populate From: with user's real name and return address from settings
+  wxFileConfig cfg("wxEudora", "", "eudora.ini");
+  wxString realName = cfg.Read("/Settings/RealName", "");
+  wxString returnAddr = cfg.Read("/Settings/ReturnAddress", "");
+  wxString defaultFrom;
+  if (!realName.IsEmpty() && !returnAddr.IsEmpty()) {
+    defaultFrom = wxString::Format("%s <%s>", realName, returnAddr);
+  } else if (!returnAddr.IsEmpty()) {
+    defaultFrom = returnAddr;
+  } else {
+    defaultFrom = realName;
+  }
+  wxTextCtrl *fromCtrl = new wxTextCtrl(composePanel, wxID_ANY, defaultFrom);
+  hdrGrid->Add(fromCtrl, 1, wxEXPAND);
+
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "To:"), 0, wxALIGN_CENTER_VERTICAL);
+  wxTextCtrl *toCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
+  hdrGrid->Add(toCtrl, 1, wxEXPAND);
+
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Cc:"), 0, wxALIGN_CENTER_VERTICAL);
+  wxTextCtrl *ccCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
+  hdrGrid->Add(ccCtrl, 1, wxEXPAND);
+
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Bcc:"), 0, wxALIGN_CENTER_VERTICAL);
+  wxTextCtrl *bccCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
+  hdrGrid->Add(bccCtrl, 1, wxEXPAND);
+
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Subject:"), 0, wxALIGN_CENTER_VERTICAL);
+  wxTextCtrl *subjectCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
+  hdrGrid->Add(subjectCtrl, 1, wxEXPAND);
+
+  mainSizer->Add(hdrGrid, 0, wxEXPAND | wxALL, 6);
+
+  // Toolbar area (Send/Queue + formatting buttons)
+  wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
+  wxButton *sendBtn = new wxButton(composePanel, wxID_ANY, "Send");
+  wxButton *queueBtn = new wxButton(composePanel, wxID_ANY, "Queue");
+  btnSizer->Add(sendBtn, 0, wxRIGHT, 8);
+  btnSizer->Add(queueBtn, 0, wxRIGHT, 16);
+
+  // Formatting buttons: Bold, Italic, Underline (operate on selection)
+  wxButton *boldBtn = new wxButton(composePanel, wxID_ANY, "B");
+  wxButton *italicBtn = new wxButton(composePanel, wxID_ANY, "I");
+  wxButton *underlineBtn = new wxButton(composePanel, wxID_ANY, "U");
+  btnSizer->Add(boldBtn, 0, wxRIGHT, 4);
+  btnSizer->Add(italicBtn, 0, wxRIGHT, 4);
+  btnSizer->Add(underlineBtn, 0, wxRIGHT, 8);
+
+  btnSizer->AddStretchSpacer();
+  mainSizer->Add(btnSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 6);
+
+  // Body text (use rich text for WYSIWYG)
+  wxRichTextCtrl *bodyCtrl = new wxRichTextCtrl(composePanel, wxID_ANY, wxEmptyString,
+                                                wxDefaultPosition, wxDefaultSize,
+                                                wxVSCROLL | wxHSCROLL | wxTE_MULTILINE);
+  mainSizer->Add(bodyCtrl, 1, wxEXPAND | wxALL, 6);
+
+  composePanel->SetSizer(mainSizer);
+
+  // Bind formatting buttons to apply WYSIWYG formatting to the rich text body
+  boldBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
+    ApplyRichTextStyle(bodyCtrl, 1);
+    evt.Skip();
+  });
+  italicBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
+    ApplyRichTextStyle(bodyCtrl, 2);
+    evt.Skip();
+  });
+  underlineBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
+    ApplyRichTextStyle(bodyCtrl, 3);
+    evt.Skip();
+  });
+
+  // Bind Send/Queue actions as UI-level stubs (no linkage to legacy compose
+  // document system). These produce the expected behavior and status updates
+  // while avoiding large compile/link dependencies.
+  sendBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
+    wxString to = toCtrl->GetValue();
+    wxString from = fromCtrl->GetValue();
+    wxString subject = subjectCtrl->GetValue();
+    wxString body = bodyCtrl->GetValue();
+
+    wxString info = wxString::Format("Send: To=%s\nFrom=%s\nSubject=%s",
+                                     to, from, subject);
+    wxMessageBox(info, "Send (stub)", wxOK | wxICON_INFORMATION, this);
+    SetStatusText("Send requested (UI stub)", 0);
+    evt.Skip();
+  });
+
+  queueBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
+    wxString to = toCtrl->GetValue();
+    wxString subject = subjectCtrl->GetValue();
+    wxString info = wxString::Format("Queued (UI stub) to %s (subject: %s)", to, subject);
+    wxMessageBox(info, "Queue (stub)", wxOK | wxICON_INFORMATION, this);
+    SetStatusText("Message queued (UI stub)", 0);
+    evt.Skip();
+  });
 
   m_notebook->AddPage(composePanel, "New Message", true);
 }

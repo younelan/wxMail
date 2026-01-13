@@ -52,6 +52,11 @@ bool MainApp::OnInit() {
     }
   }
 
+  // Load local XRCs (dialogs) such as the new message dialog
+  if (!wxXmlResource::Get()->Load("resources/xrc/new_message.xrc")) {
+    wxLogWarning("Failed to load resources/xrc/new_message.xrc");
+  }
+
   // Create and show the main frame
   MainFrame *frame = new MainFrame("wxEudora");
   frame->Show(true);

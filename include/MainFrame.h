@@ -12,6 +12,8 @@
 #include <wx/splitter.h>
 #include <wx/wx.h>
 
+class wxRichTextCtrl;
+
 class wxAuiManager;
 class wxAuiToolBar;
 
@@ -46,6 +48,14 @@ private:
   void OnReplyAll(wxCommandEvent &event);
   void OnForward(wxCommandEvent &event);
   void OnDelete(wxCommandEvent &event);
+
+  // Formatting handlers (toolbar)
+  void OnFormatBold(wxCommandEvent &event);
+  void OnFormatItalic(wxCommandEvent &event);
+  void OnFormatUnderline(wxCommandEvent &event);
+  // Helpers for rich text compose windows
+  wxRichTextCtrl* FindActiveComposeRichText();
+  void ApplyRichTextStyle(wxRichTextCtrl *rc, int which);
 
   // Handler for secondary toolbar tools extracted from sprite
   void OnSecondaryTool(wxCommandEvent &event);
