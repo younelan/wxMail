@@ -1,0 +1,24 @@
+# Build artifacts
+build/
+bin/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+*.app
+
+# Backup files
+*.bak
+*.backup
