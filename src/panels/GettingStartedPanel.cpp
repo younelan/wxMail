@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Getting Started
+ * wxMail - Settings Panel for Getting Started
  * Ported from Eudora 7.1 IDD_SETTINGS_GET_START
  */
 
@@ -24,7 +24,7 @@ GettingStartedPanel::GettingStartedPanel(wxWindow *parent)
 GettingStartedPanel::~GettingStartedPanel() {}
 
 void GettingStartedPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   m_realName->SetValue(config.Read("/Settings/RealName", ""));
   m_emailAddress->SetValue(config.Read("/Settings/ReturnAddress", ""));
@@ -35,7 +35,7 @@ void GettingStartedPanel::LoadSettings() {
 }
 
 void GettingStartedPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   config.Write("/Settings/RealName", m_realName->GetValue());
   config.Write("/Settings/ReturnAddress", m_emailAddress->GetValue());

@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Sending Mail
+ * wxMail - Settings Panel for Sending Mail
  * Ported from Eudora 7.1 IDD_SETTINGS_SENDING
  */
 
@@ -24,7 +24,7 @@ SendingMailPanel::SendingMailPanel(wxWindow *parent) : SettingsPanel(parent) {
 SendingMailPanel::~SendingMailPanel() {}
 
 void SendingMailPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   m_emailAddress->SetValue(config.Read("/Settings/ReturnAddress", ""));
   m_domainQualifier->SetValue(config.Read("/Settings/DomainQualifier", ""));
@@ -38,7 +38,7 @@ void SendingMailPanel::LoadSettings() {
 }
 
 void SendingMailPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   config.Write("/Settings/ReturnAddress", m_emailAddress->GetValue());
   config.Write("/Settings/DomainQualifier", m_domainQualifier->GetValue());

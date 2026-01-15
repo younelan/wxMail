@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Attachments
+ * wxMail - Settings Panel for Attachments
  * Ported from Eudora 7.1 IDD_SETTINGS_ATTACH
  */
 
@@ -24,7 +24,7 @@ AttachmentsPanel::AttachmentsPanel(wxWindow *parent) : SettingsPanel(parent) {
 AttachmentsPanel::~AttachmentsPanel() {}
 
 void AttachmentsPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   long encoding = config.ReadLong("/Settings/SendEncoding", 0);
   m_encodeMime->SetValue(encoding == 0);
@@ -43,7 +43,7 @@ void AttachmentsPanel::LoadSettings() {
 }
 
 void AttachmentsPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   long encoding =
       m_encodeMime->GetValue() ? 0 : (m_encodeBinhex->GetValue() ? 1 : 2);

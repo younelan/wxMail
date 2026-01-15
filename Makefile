@@ -1,4 +1,4 @@
-# wxEudora Makefile
+# wxMail Makefile
 # A wxWidgets port of Eudora email client
 
 # Compiler and flags
@@ -9,7 +9,7 @@ LDFLAGS =
 # wxWidgets configuration
 WX_CONFIG = wx-config
 WX_CXXFLAGS = $(shell $(WX_CONFIG) --cxxflags)
-WX_LIBS = $(shell $(WX_CONFIG) --libs aui,core,base,xrc)
+WX_LIBS = $(shell $(WX_CONFIG) --libs all)
 
 # Directories
 SRC_DIR = src
@@ -18,7 +18,7 @@ BUILD_DIR = build
 BIN_DIR = bin
 
 # Target executable
-TARGET = $(BIN_DIR)/wxeudora
+TARGET = $(BIN_DIR)/wxMail
 
 # Source files
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/panels/*.cpp)
@@ -44,6 +44,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(WX_CXXFLAGS) -c $< -o $@
 
+# (No rule for top-level .cpp files — they are not built by default)
+
 # Run the application
 run: $(TARGET)
 	./$(TARGET)
@@ -66,7 +68,7 @@ check-wx:
 
 # Help target
 help:
-	@echo "wxEudora Makefile"
+	@echo "wxMail Makefile"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  all        - Build the application (default)"

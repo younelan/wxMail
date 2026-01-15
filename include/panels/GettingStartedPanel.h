@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Getting Started
+ * wxMail - Settings Panel for Getting Started
  * Ported from Eudora 7.1 IDD_SETTINGS_GET_START
  */
 

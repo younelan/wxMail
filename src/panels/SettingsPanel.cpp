@@ -1,5 +1,5 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * SettingsPanel.cpp - Base class implementation
  */

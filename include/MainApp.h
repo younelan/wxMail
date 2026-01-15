@@ -1,5 +1,5 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * MainApp.h - Main application class header
  */
@@ -10,7 +10,7 @@
 #include <wx/wx.h>
 
 /**
- * Main application class for wxEudora
+ * Main application class for wxMail
  */
 class MainApp : public wxApp {
 public:

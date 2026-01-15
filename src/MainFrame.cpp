@@ -1,23 +1,23 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * MainFrame.cpp - Main MDI parent frame implementation
  */
 
 #include "MainFrame.h"
 #include "ChildFrame.h"
-#include "SettingsDialog.h"
 #include "NewMessageDialog.h"
+#include "SettingsDialog.h"
 #include <wx/artprov.h>
-#include <wx/aui/auibook.h>
 #include <wx/aui/aui.h>
 #include <wx/aui/auibar.h>
+#include <wx/aui/auibook.h>
+#include <wx/fileconf.h>
 #include <wx/panel.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include <wx/treectrl.h>
 #include <wx/xrc/xmlres.h>
-#include <wx/fileconf.h>
 // new-message helpers removed; using original notebook compose behavior
 #include <wx/richtext/richtextctrl.h>
 
@@ -116,7 +116,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     wxBoxSizer *welcomeSizer = new wxBoxSizer(wxVERTICAL);
     wxStaticText *welcomeText =
         new wxStaticText(welcomePanel, wxID_ANY,
-                         "Welcome to wxEudora (Phoenix UI)\n\n"
+                         "Welcome to wxMail (Phoenix UI)\n\n"
                          "• Use File → New Message to compose\n"
                          "• Click a mailbox to view messages\n"
                          "• Double-click a message to open it\n",
@@ -153,29 +153,40 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
   }
 
   // Create main toolbar and try to load icons from resources/png
-  m_toolBar = new wxAuiToolBar(this, wxID_ANY,
-                               wxDefaultPosition, wxDefaultSize,
+  m_toolBar = new wxAuiToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxAUI_TB_HORZ_TEXT);
+  // Ensure toolbar expects 32x32 bitmaps (so tbar32.png displays)
+  m_toolBar->SetToolBitmapSize(wxSize(32, 32));
   // helper lambda to load a PNG and add tool (fallback to text)
-  auto addToolWithPng = [this](int id, const wxString &label, const wxString &png, const wxString &tip) {
+  auto addToolWithPng = [this](int id, const wxString &label,
+                               const wxString &png, const wxString &tip) {
     wxBitmap bmp;
-    if (wxFileExists(png)) bmp.LoadFile(png, wxBITMAP_TYPE_PNG);
-    if (bmp.IsOk()) m_toolBar->AddTool(id, label, bmp, tip);
-    else m_toolBar->AddTool(id, label, wxNullBitmap, tip);
+    if (wxFileExists(png))
+      bmp.LoadFile(png, wxBITMAP_TYPE_PNG);
+    if (bmp.IsOk())
+      m_toolBar->AddTool(id, label, bmp, tip);
+    else
+      m_toolBar->AddTool(id, label, wxNullBitmap, tip);
   };
 
-  addToolWithPng(ID_NEW_MESSAGE, "New", "resources/png/NEWFILE.png", "New Message");
+  addToolWithPng(ID_NEW_MESSAGE, "New", "resources/png/NEWFILE.png",
+                 "New Message");
   addToolWithPng(ID_REPLY, "Reply", "resources/png/REPLYING.png", "Reply");
 
   // If RTB1 is a sprite (many 16x16 icons in a row), extract sub-bitmaps
-  auto addToolsFromSprite = [this](const wxString &png, int baseId, int tileW, int tileH, int maxCount) {
-    if (!wxFileExists(png)) return 0;
+  auto addToolsFromSprite = [this](const wxString &png, int baseId, int tileW,
+                                   int tileH, int maxCount) {
+    if (!wxFileExists(png))
+      return 0;
     wxBitmap bmp;
-    if (!bmp.LoadFile(png, wxBITMAP_TYPE_PNG) || !bmp.IsOk()) return 0;
+    if (!bmp.LoadFile(png, wxBITMAP_TYPE_PNG) || !bmp.IsOk())
+      return 0;
     int cols = bmp.GetWidth() / tileW;
-    if (cols <= 0) return 0;
+    if (cols <= 0)
+      return 0;
     int yoff = 0;
-    if (bmp.GetHeight() > tileH) yoff = (bmp.GetHeight() - tileH) / 2;
+    if (bmp.GetHeight() > tileH)
+      yoff = (bmp.GetHeight() - tileH) / 2;
     int added = 0;
     for (int c = 0; c < cols && added < maxCount; ++c) {
       wxRect r(c * tileW, yoff, tileW, tileH);
@@ -191,29 +202,45 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
   // Map RTB1 sprite tiles to toolbar IDs from the original RC.
   // Order matches the original resource snippet (buttons, separators, etc.).
-  std::vector<wxString> rtb1_map = {
-      "ID_BLAHBLAHBLAH",            "ID_EDIT_MESSAGE",
-      "ID_DELETE_FROM_SERVER",      "ID_DOWNLOAD_FROM_SERVER",
-      "ID_EDIT_TEXT_BOLD",          "ID_EDIT_TEXT_ITALIC",
-      "ID_EDIT_TEXT_UNDERLINE",     "ID_EDIT_TEXT_STRIKEOUT",
-      "ID_EDIT_TEXT_LAST_TEXT_COLOR","ID_EDIT_TEXT_COLOR",
-      "ID_EDIT_TEXT_LEFT",          "ID_EDIT_TEXT_CENTER",
-      "ID_EDIT_TEXT_RIGHT",         "SEPARATOR",
-      "ID_EDIT_TEXT_INDENT_IN",     "ID_EDIT_TEXT_INDENT_OUT",
-      "ID_EDIT_TEXT_CLEAR",         "ID_EDIT_TEXT_SIZE",
-      "ID_PRIORITY",                "ID_SUBJECT",
-      "ID_SUBJECT_STATIC",          "ID_TOW_TRUCK",
-      "ID_EDIT_TEXT_TT",            "SEPARATOR",
-      "ID_FONT",                    "ID_EDIT_INSERT_PICTURE",
-      "ID_EDIT_INSERT_LINK",        "ID_EDIT_INSERT_HR",
-      "ID_USE_FIXED_FONT",          "ID_BLKFMT_BULLETTED_LIST",
-      "ID_EDIT_INSERT",             "ID_EDIT_TEXT_FORMAT_PAINTER"};
+  std::vector<wxString> rtb1_map = {"ID_BLAHBLAHBLAH",
+                                    "ID_EDIT_MESSAGE",
+                                    "ID_DELETE_FROM_SERVER",
+                                    "ID_DOWNLOAD_FROM_SERVER",
+                                    "ID_EDIT_TEXT_BOLD",
+                                    "ID_EDIT_TEXT_ITALIC",
+                                    "ID_EDIT_TEXT_UNDERLINE",
+                                    "ID_EDIT_TEXT_STRIKEOUT",
+                                    "ID_EDIT_TEXT_LAST_TEXT_COLOR",
+                                    "ID_EDIT_TEXT_COLOR",
+                                    "ID_EDIT_TEXT_LEFT",
+                                    "ID_EDIT_TEXT_CENTER",
+                                    "ID_EDIT_TEXT_RIGHT",
+                                    "SEPARATOR",
+                                    "ID_EDIT_TEXT_INDENT_IN",
+                                    "ID_EDIT_TEXT_INDENT_OUT",
+                                    "ID_EDIT_TEXT_CLEAR",
+                                    "ID_EDIT_TEXT_SIZE",
+                                    "ID_PRIORITY",
+                                    "ID_SUBJECT",
+                                    "ID_SUBJECT_STATIC",
+                                    "ID_TOW_TRUCK",
+                                    "ID_EDIT_TEXT_TT",
+                                    "SEPARATOR",
+                                    "ID_FONT",
+                                    "ID_EDIT_INSERT_PICTURE",
+                                    "ID_EDIT_INSERT_LINK",
+                                    "ID_EDIT_INSERT_HR",
+                                    "ID_USE_FIXED_FONT",
+                                    "ID_BLKFMT_BULLETTED_LIST",
+                                    "ID_EDIT_INSERT",
+                                    "ID_EDIT_TEXT_FORMAT_PAINTER"};
 
   // Load sprite and apply mapping: each non-separator consumes one tile.
-  if (wxFileExists("resources/png/RTB1.png")) {
+  if (wxFileExists("resources/png/tbar32.png")) {
     wxBitmap bmp;
-    if (bmp.LoadFile("resources/png/RTB1.png", wxBITMAP_TYPE_PNG) && bmp.IsOk()) {
-      int tileW = 17, tileH = 17;
+    if (bmp.LoadFile("resources/png/tbar32.png", wxBITMAP_TYPE_PNG) &&
+        bmp.IsOk()) {
+      int tileW = 32, tileH = 32;
       int cols = bmp.GetWidth() / tileW;
       int yoff = (bmp.GetHeight() > tileH) ? (bmp.GetHeight() - tileH) / 2 : 0;
       int tileIndex = 0;
@@ -223,7 +250,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
           m_toolBar->AddSeparator();
           continue;
         }
-        if (tileIndex >= cols) break;
+        if (tileIndex >= cols)
+          break;
         wxRect r(tileIndex * tileW, yoff, tileW, tileH);
         wxBitmap sub = bmp.GetSubBitmap(r);
         int id = XRCID(token);
@@ -243,10 +271,12 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
   }
 
   addToolWithPng(ID_FORWARD, "Forward", "", "Forward");
-  addToolWithPng(ID_DELETE_MESSAGE, "Delete", "resources/png/Remove.png", "Delete");
+  addToolWithPng(ID_DELETE_MESSAGE, "Delete", "resources/png/Remove.png",
+                 "Delete");
 
   m_toolBar->Realize();
-  m_auiManager->AddPane(m_toolBar, wxAuiPaneInfo().Name("MainToolbar").ToolbarPane().Top());
+  m_auiManager->AddPane(
+      m_toolBar, wxAuiPaneInfo().Name("MainToolbar").ToolbarPane().Top());
   m_auiManager->Update();
 
   // Bind toolbar events to existing handlers
@@ -256,8 +286,10 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
   Bind(wxEVT_TOOL, &MainFrame::OnDelete, this, ID_DELETE_MESSAGE);
   // Bind top-toolbar formatting buttons (if present in XRC)
   Bind(wxEVT_TOOL, &MainFrame::OnFormatBold, this, XRCID("ID_EDIT_TEXT_BOLD"));
-  Bind(wxEVT_TOOL, &MainFrame::OnFormatItalic, this, XRCID("ID_EDIT_TEXT_ITALIC"));
-  Bind(wxEVT_TOOL, &MainFrame::OnFormatUnderline, this, XRCID("ID_EDIT_TEXT_UNDERLINE"));
+  Bind(wxEVT_TOOL, &MainFrame::OnFormatItalic, this,
+       XRCID("ID_EDIT_TEXT_ITALIC"));
+  Bind(wxEVT_TOOL, &MainFrame::OnFormatUnderline, this,
+       XRCID("ID_EDIT_TEXT_UNDERLINE"));
 
   // Set the frame size to ensure children have a size to calculate from
   SetSize(1200, 800);
@@ -287,26 +319,34 @@ void MainFrame::OnSize(wxSizeEvent &event) {
 
 // Find the first wxRichTextCtrl in the currently active notebook page (compose)
 wxRichTextCtrl *MainFrame::FindActiveComposeRichText() {
-  if (!m_notebook) return nullptr;
+  if (!m_notebook)
+    return nullptr;
   int sel = m_notebook->GetSelection();
-  if (sel == wxNOT_FOUND) return nullptr;
+  if (sel == wxNOT_FOUND)
+    return nullptr;
   wxWindow *page = m_notebook->GetPage(sel);
-  if (!page) return nullptr;
-  for (wxWindowList::iterator it = page->GetChildren().begin(); it != page->GetChildren().end(); ++it) {
+  if (!page)
+    return nullptr;
+  for (wxWindowList::iterator it = page->GetChildren().begin();
+       it != page->GetChildren().end(); ++it) {
     wxWindow *child = *it;
     wxRichTextCtrl *rt = dynamic_cast<wxRichTextCtrl *>(child);
-    if (rt) return rt;
+    if (rt)
+      return rt;
     // also check descendants
-    wxRichTextCtrl *rt2 = dynamic_cast<wxRichTextCtrl *>(child->FindWindowById(child->GetId()));
+    wxRichTextCtrl *rt2 =
+        dynamic_cast<wxRichTextCtrl *>(child->FindWindowById(child->GetId()));
     (void)rt2; // silence unused
   }
   // fallback: search grandchildren
-  for (wxWindowList::iterator it = page->GetChildren().begin(); it != page->GetChildren().end(); ++it) {
+  for (wxWindowList::iterator it = page->GetChildren().begin();
+       it != page->GetChildren().end(); ++it) {
     wxWindow *child = *it;
     wxWindowList &grand = child->GetChildren();
     for (wxWindowList::iterator jt = grand.begin(); jt != grand.end(); ++jt) {
       wxRichTextCtrl *rt = dynamic_cast<wxRichTextCtrl *>(*jt);
-      if (rt) return rt;
+      if (rt)
+        return rt;
     }
   }
   return nullptr;
@@ -314,14 +354,19 @@ wxRichTextCtrl *MainFrame::FindActiveComposeRichText() {
 
 // Apply a simple rich-text attribute to the active compose control
 void MainFrame::ApplyRichTextStyle(wxRichTextCtrl *rc, int which) {
-  if (!rc) return;
+  if (!rc)
+    return;
   long from = 0, to = 0;
   rc->GetSelection(&from, &to);
-  if (from == to) return; // nothing selected
+  if (from == to)
+    return; // nothing selected
   wxRichTextAttr attr;
-  if (which == 1) attr.SetFontWeight(wxFONTWEIGHT_BOLD);
-  else if (which == 2) attr.SetFontStyle(wxFONTSTYLE_ITALIC);
-  else if (which == 3) attr.SetFontUnderlined(true);
+  if (which == 1)
+    attr.SetFontWeight(wxFONTWEIGHT_BOLD);
+  else if (which == 2)
+    attr.SetFontStyle(wxFONTSTYLE_ITALIC);
+  else if (which == 3)
+    attr.SetFontUnderlined(true);
   rc->SetStyle(from, to, attr);
 }
 
@@ -352,7 +397,6 @@ MainFrame::~MainFrame() {
   }
 }
 
-
 void MainFrame::CreateMenuBar() {
   wxMenuBar *menuBar = new wxMenuBar;
 
@@ -368,7 +412,7 @@ void MainFrame::CreateMenuBar() {
   fileMenu->AppendSeparator();
   fileMenu->Append(wxID_PRINT, "&Print...\tCtrl-P", "Print current document");
   fileMenu->AppendSeparator();
-  fileMenu->Append(wxID_EXIT, "E&xit\tAlt-F4", "Exit wxEudora");
+  fileMenu->Append(wxID_EXIT, "E&xit\tAlt-F4", "Exit wxMail");
   menuBar->Append(fileMenu, "&File");
 
   // Edit menu
@@ -424,7 +468,7 @@ void MainFrame::CreateMenuBar() {
 
   // Special menu
   wxMenu *specialMenu = new wxMenu;
-  specialMenu->Append(ID_SETTINGS, "&Settings...", "Configure wxEudora");
+  specialMenu->Append(ID_SETTINGS, "&Settings...", "Configure wxMail");
   specialMenu->AppendSeparator();
   specialMenu->Append(ID_FILTERS, "&Filters...", "Manage mail filters");
   specialMenu->Append(ID_EMPTY_TRASH, "&Empty Trash",
@@ -458,7 +502,7 @@ void MainFrame::CreateMenuBar() {
   wxMenu *helpMenu = new wxMenu;
   helpMenu->Append(wxID_HELP, "&Help Contents\tF1", "Show help contents");
   helpMenu->AppendSeparator();
-  helpMenu->Append(wxID_ABOUT, "&About wxEudora", "About this application");
+  helpMenu->Append(wxID_ABOUT, "&About wxMail", "About this application");
   menuBar->Append(helpMenu, "&Help");
 
   SetMenuBar(menuBar);
@@ -476,9 +520,10 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
   wxFlexGridSizer *hdrGrid = new wxFlexGridSizer(2, 5, 5);
   hdrGrid->AddGrowableCol(1, 1);
 
-  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "From:"), 0, wxALIGN_CENTER_VERTICAL);
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "From:"), 0,
+               wxALIGN_CENTER_VERTICAL);
   // Populate From: with user's real name and return address from settings
-  wxFileConfig cfg("wxEudora", "", "eudora.ini");
+  wxFileConfig cfg("wxMail", "", "eudora.ini");
   wxString realName = cfg.Read("/Settings/RealName", "");
   wxString returnAddr = cfg.Read("/Settings/ReturnAddress", "");
   wxString defaultFrom;
@@ -492,20 +537,25 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
   wxTextCtrl *fromCtrl = new wxTextCtrl(composePanel, wxID_ANY, defaultFrom);
   hdrGrid->Add(fromCtrl, 1, wxEXPAND);
 
-  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "To:"), 0, wxALIGN_CENTER_VERTICAL);
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "To:"), 0,
+               wxALIGN_CENTER_VERTICAL);
   wxTextCtrl *toCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
   hdrGrid->Add(toCtrl, 1, wxEXPAND);
 
-  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Cc:"), 0, wxALIGN_CENTER_VERTICAL);
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Cc:"), 0,
+               wxALIGN_CENTER_VERTICAL);
   wxTextCtrl *ccCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
   hdrGrid->Add(ccCtrl, 1, wxEXPAND);
 
-  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Bcc:"), 0, wxALIGN_CENTER_VERTICAL);
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Bcc:"), 0,
+               wxALIGN_CENTER_VERTICAL);
   wxTextCtrl *bccCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
   hdrGrid->Add(bccCtrl, 1, wxEXPAND);
 
-  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Subject:"), 0, wxALIGN_CENTER_VERTICAL);
-  wxTextCtrl *subjectCtrl = new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
+  hdrGrid->Add(new wxStaticText(composePanel, wxID_ANY, "Subject:"), 0,
+               wxALIGN_CENTER_VERTICAL);
+  wxTextCtrl *subjectCtrl =
+      new wxTextCtrl(composePanel, wxID_ANY, wxEmptyString);
   hdrGrid->Add(subjectCtrl, 1, wxEXPAND);
 
   mainSizer->Add(hdrGrid, 0, wxEXPAND | wxALL, 6);
@@ -529,9 +579,9 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
   mainSizer->Add(btnSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 6);
 
   // Body text (use rich text for WYSIWYG)
-  wxRichTextCtrl *bodyCtrl = new wxRichTextCtrl(composePanel, wxID_ANY, wxEmptyString,
-                                                wxDefaultPosition, wxDefaultSize,
-                                                wxVSCROLL | wxHSCROLL | wxTE_MULTILINE);
+  wxRichTextCtrl *bodyCtrl = new wxRichTextCtrl(
+      composePanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+      wxVSCROLL | wxHSCROLL | wxTE_MULTILINE);
   mainSizer->Add(bodyCtrl, 1, wxEXPAND | wxALL, 6);
 
   composePanel->SetSizer(mainSizer);
@@ -559,8 +609,8 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
     wxString subject = subjectCtrl->GetValue();
     wxString body = bodyCtrl->GetValue();
 
-    wxString info = wxString::Format("Send: To=%s\nFrom=%s\nSubject=%s",
-                                     to, from, subject);
+    wxString info =
+        wxString::Format("Send: To=%s\nFrom=%s\nSubject=%s", to, from, subject);
     wxMessageBox(info, "Send (stub)", wxOK | wxICON_INFORMATION, this);
     SetStatusText("Send requested (UI stub)", 0);
     evt.Skip();
@@ -569,7 +619,8 @@ void MainFrame::OnNewMessage(wxCommandEvent &WXUNUSED(event)) {
   queueBtn->Bind(wxEVT_BUTTON, [=](wxCommandEvent &evt) {
     wxString to = toCtrl->GetValue();
     wxString subject = subjectCtrl->GetValue();
-    wxString info = wxString::Format("Queued (UI stub) to %s (subject: %s)", to, subject);
+    wxString info =
+        wxString::Format("Queued (UI stub) to %s (subject: %s)", to, subject);
     wxMessageBox(info, "Queue (stub)", wxOK | wxICON_INFORMATION, this);
     SetStatusText("Message queued (UI stub)", 0);
     evt.Skip();
@@ -707,11 +758,11 @@ void MainFrame::OnHelpContents(wxCommandEvent &WXUNUSED(event)) {
 }
 
 void MainFrame::OnAbout(wxCommandEvent &WXUNUSED(event)) {
-  wxMessageBox("wxEudora - A wxWidgets Port\n\n"
+  wxMessageBox("wxMail - A wxWidgets Port\n\n"
                "Based on the public domain Eudora 7.1 source code.\n"
                "Ported to wxWidgets for cross-platform compatibility.\n\n"
                "Version: 0.2.0 (MDI Interface)",
-               "About wxEudora", wxOK | wxICON_INFORMATION, this);
+               "About wxMail", wxOK | wxICON_INFORMATION, this);
 }
 
 // Update UI handlers

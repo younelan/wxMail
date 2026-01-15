@@ -12,12 +12,21 @@ CNewMessageFrame::CNewMessageFrame(wxMDIParentFrame* parent)
 
         // Toolbar
         m_toolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                  wxTB_HORIZONTAL | wxTB_TEXT);
-        m_toolBar->AddTool(XRCID("ID_NM_SEND"), "Send", wxNullBitmap);
-        m_toolBar->AddTool(XRCID("ID_NM_ATTACH"), "Attach", wxNullBitmap);
-        m_toolBar->AddTool(XRCID("ID_NM_BOLD"), "B", wxNullBitmap);
-        m_toolBar->AddTool(XRCID("ID_NM_ITALIC"), "I", wxNullBitmap);
-        m_toolBar->AddTool(XRCID("ID_NM_UNDER"), "U", wxNullBitmap);
+                      wxTB_HORIZONTAL | wxTB_TEXT);
+        // Use 32x32 toolbar icons from resources/png/
+        m_toolBar->SetToolBitmapSize(wxSize(32, 32));
+        wxBitmap bmpSend("resources/png/tbar32.png", wxBITMAP_TYPE_PNG);
+        wxBitmap bmpAttach("resources/png/tbar32a.png", wxBITMAP_TYPE_PNG);
+        wxBitmap bmpBold("resources/png/tbar32b.png", wxBITMAP_TYPE_PNG);
+        // reuse existing bitmaps for italic/underline if separate icons not available
+        wxBitmap bmpItalic = bmpBold;
+        wxBitmap bmpUnder = bmpBold;
+
+        m_toolBar->AddTool(XRCID("ID_NM_SEND"), "Send", bmpSend);
+        m_toolBar->AddTool(XRCID("ID_NM_ATTACH"), "Attach", bmpAttach);
+        m_toolBar->AddTool(XRCID("ID_NM_BOLD"), "B", bmpBold);
+        m_toolBar->AddTool(XRCID("ID_NM_ITALIC"), "I", bmpItalic);
+        m_toolBar->AddTool(XRCID("ID_NM_UNDER"), "U", bmpUnder);
         m_toolBar->Realize();
         Bind(wxEVT_TOOL, &CNewMessageFrame::OnSend, this, XRCID("ID_NM_SEND"));
         Bind(wxEVT_TOOL, &CNewMessageFrame::OnAttach, this, XRCID("ID_NM_ATTACH"));

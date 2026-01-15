@@ -10,12 +10,12 @@ MiscellaneousPanel::MiscellaneousPanel(wxWindow *parent)
 MiscellaneousPanel::~MiscellaneousPanel() {}
 
 void MiscellaneousPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings from eudora.ini
 }
 
 void MiscellaneousPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings to eudora.ini
   config.Flush();
 }

@@ -15,7 +15,7 @@ NetworkPanel::NetworkPanel(wxWindow *parent) : SettingsPanel(parent) {
 NetworkPanel::~NetworkPanel() {}
 
 void NetworkPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   m_networkOpenTimeout->SetValue(wxString::Format(
       "%ld", config.ReadLong("/Settings/NetworkOpenTimeout", 60)));
@@ -30,7 +30,7 @@ void NetworkPanel::LoadSettings() {
 }
 
 void NetworkPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   long openTimeout, timeout, bufferSize;
   if (m_networkOpenTimeout->GetValue().ToLong(&openTimeout))

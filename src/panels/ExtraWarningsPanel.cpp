@@ -10,12 +10,12 @@ ExtraWarningsPanel::ExtraWarningsPanel(wxWindow *parent)
 ExtraWarningsPanel::~ExtraWarningsPanel() {}
 
 void ExtraWarningsPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings from eudora.ini
 }
 
 void ExtraWarningsPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings to eudora.ini
   config.Flush();
 }

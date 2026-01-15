@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Replying
+ * wxMail - Settings Panel for Replying
  * Ported from Eudora 7.1 IDD_SETTINGS_REPLYING
  */
 
@@ -23,7 +23,7 @@ ReplyingPanel::ReplyingPanel(wxWindow *parent) : SettingsPanel(parent) {
 ReplyingPanel::~ReplyingPanel() {}
 
 void ReplyingPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   m_replyToAll->SetValue(config.ReadBool("/Settings/ReplyToAll", false));
   m_copyPriority->SetValue(config.ReadBool("/Settings/CopyPriority", false));
@@ -38,7 +38,7 @@ void ReplyingPanel::LoadSettings() {
 }
 
 void ReplyingPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   config.Write("/Settings/ReplyToAll", m_replyToAll->GetValue());
   config.Write("/Settings/CopyPriority", m_copyPriority->GetValue());

@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Replying
+ * wxMail - Settings Panel for Replying
  * Ported from Eudora 7.1 IDD_SETTINGS_REPLYING
  */
 

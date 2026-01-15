@@ -1,5 +1,5 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * ChildFrame.cpp - MDI child window implementation
  */

@@ -9,12 +9,12 @@ MailboxesPanel::MailboxesPanel(wxWindow *parent) : SettingsPanel(parent) {
 MailboxesPanel::~MailboxesPanel() {}
 
 void MailboxesPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings from eudora.ini
 }
 
 void MailboxesPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings to eudora.ini
   config.Flush();
 }

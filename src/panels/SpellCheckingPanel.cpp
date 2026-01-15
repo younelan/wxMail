@@ -10,12 +10,12 @@ SpellCheckingPanel::SpellCheckingPanel(wxWindow *parent)
 SpellCheckingPanel::~SpellCheckingPanel() {}
 
 void SpellCheckingPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings - placeholder
 }
 
 void SpellCheckingPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings - placeholder
   config.Flush();
 }

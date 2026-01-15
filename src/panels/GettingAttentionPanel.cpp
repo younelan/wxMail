@@ -10,12 +10,12 @@ GettingAttentionPanel::GettingAttentionPanel(wxWindow *parent)
 GettingAttentionPanel::~GettingAttentionPanel() {}
 
 void GettingAttentionPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings - placeholder
 }
 
 void GettingAttentionPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings - placeholder
   config.Flush();
 }

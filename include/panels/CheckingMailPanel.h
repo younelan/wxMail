@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Checking Mail
+ * wxMail - Settings Panel for Checking Mail
  * Ported from Eudora 7.1 IDD_SETTINGS_CHECKING
  */
 

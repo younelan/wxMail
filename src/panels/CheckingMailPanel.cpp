@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Checking Mail
+ * wxMail - Settings Panel for Checking Mail
  * Ported from Eudora 7.1 IDD_SETTINGS_CHECKING
  */
 
@@ -28,7 +28,7 @@ CheckingMailPanel::CheckingMailPanel(wxWindow *parent) : SettingsPanel(parent) {
 CheckingMailPanel::~CheckingMailPanel() {}
 
 void CheckingMailPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   m_mailServer->SetValue(config.Read("/Settings/POPServer", ""));
   m_userName->SetValue(config.Read("/Settings/LoginName", ""));
@@ -43,7 +43,7 @@ void CheckingMailPanel::LoadSettings() {
 }
 
 void CheckingMailPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
 
   config.Write("/Settings/POPServer", m_mailServer->GetValue());
   config.Write("/Settings/LoginName", m_userName->GetValue());

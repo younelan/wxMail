@@ -9,12 +9,12 @@ TasksPanel::TasksPanel(wxWindow *parent) : SettingsPanel(parent) {
 TasksPanel::~TasksPanel() {}
 
 void TasksPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings - placeholder
 }
 
 void TasksPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings - placeholder
   config.Flush();
 }

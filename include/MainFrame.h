@@ -1,5 +1,5 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * MainFrame.h - Main MDI parent frame window
  */
@@ -54,7 +54,7 @@ private:
   void OnFormatItalic(wxCommandEvent &event);
   void OnFormatUnderline(wxCommandEvent &event);
   // Helpers for rich text compose windows
-  wxRichTextCtrl* FindActiveComposeRichText();
+  wxRichTextCtrl *FindActiveComposeRichText();
   void ApplyRichTextStyle(wxRichTextCtrl *rc, int which);
 
   // Handler for secondary toolbar tools extracted from sprite
@@ -129,8 +129,7 @@ enum {
   ID_CASCADE,
   ID_TILE_HORIZONTAL,
   ID_TILE_VERTICAL,
-  ID_CLOSE_ALL
-  ,
+  ID_CLOSE_ALL,
   // Base for toolbar sprite-generated tool IDs
   ID_SEC_TOOL_BASE = wxID_HIGHEST + 1000
 };

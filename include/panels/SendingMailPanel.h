@@ -1,5 +1,5 @@
 /**
- * wxEudora - Settings Panel for Sending Mail
+ * wxMail - Settings Panel for Sending Mail
  * Ported from Eudora 7.1 IDD_SETTINGS_SENDING
  */
 

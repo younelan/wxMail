@@ -1,19 +1,19 @@
 /**
- * wxEudora - A wxWidgets port of the Eudora email client
+ * wxMail - A wxWidgets port of the Eudora email client
  *
  * MainApp.cpp - Main application implementation
  */
 
 #include "MainApp.h"
 #include "MainFrame.h"
-#include <wx/xrc/xmlres.h>
 #include <wx/image.h>
+#include <wx/xrc/xmlres.h>
 
 wxIMPLEMENT_APP(MainApp);
 
 bool MainApp::OnInit() {
   SetVendorName("Eudora");
-  SetAppName("wxEudora");
+  SetAppName("wxMail");
 
   if (!wxApp::OnInit())
     return false;
@@ -58,7 +58,7 @@ bool MainApp::OnInit() {
   }
 
   // Create and show the main frame
-  MainFrame *frame = new MainFrame("wxEudora");
+  MainFrame *frame = new MainFrame("wxMail");
   frame->Show(true);
 
   return true;

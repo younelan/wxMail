@@ -9,12 +9,12 @@ ViewingMailPanel::ViewingMailPanel(wxWindow *parent) : SettingsPanel(parent) {
 ViewingMailPanel::~ViewingMailPanel() {}
 
 void ViewingMailPanel::LoadSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Load settings from eudora.ini
 }
 
 void ViewingMailPanel::SaveSettings() {
-  wxFileConfig config("wxEudora", "", "eudora.ini");
+  wxFileConfig config("wxMail", "", "eudora.ini");
   // Save settings to eudora.ini
   config.Flush();
 }
